@@ -1,9 +1,9 @@
 import express, { NextFunction, Request, Response } from "express";
-import createHttpError from "http-errors";
 import globalErrorHanlder from "./middlewares/globalErrorHandler";
 import userRouter from "./user/userRouter";
 
 const app = express();
+app.use(express.json());
 
 // Routes
 app.get("/", (req, res, next) => {
