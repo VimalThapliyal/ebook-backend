@@ -1,28 +1,24 @@
 import express from "express";
 import { createBook } from "./bookController";
-import multer from "multer";
 import path from "node:path";
-
-const upload = multer({
-  dest: path.resolve(__dirname, "../../public/data/uploads"),
-  limits: { fileSize: 3e7 }, // 30mb
-});
+import multer from "multer";
 
 const bookRouter = express.Router();
 
-bookRouter.post(
-  "/",
-  upload.fields([
-    {
-      name: "coverImage",
-      maxCount: 1,
-    },
-    {
-      name: "file",
-      maxCount: 1,
-    },
-  ]),
-  createBook
-);
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "uploads/");
+  },
+  filename: (req, file, cb) => {
+    cb(null, file.originalname);
+  },
+});
+
+const upload = multer({ storage: storage }).fields([
+  { name: "coverImage", maxCount: 1 },
+  { name: "file", maxCount: 1 },
+]);
+
+bookRouter.post("/", upload, createBook);
 
 export default bookRouter;
